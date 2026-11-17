@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Igor Fonseca | Engenharia Informática</title>
+<meta name="description" content="Igor Fonseca, finalista de Engenharia Informática em Tomar. Projetos, percurso e contacto.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 9 L24 14 L12 24' fill='none' stroke='%231D5BD6' stroke-width='2.5'/%3E%3Ccircle cx='8' cy='9' r='4.5' fill='%231D5BD6'/%3E%3Ccircle cx='24' cy='14' r='4.5' fill='%231D5BD6'/%3E%3Crect x='7' y='19' width='10' height='10' rx='2.5' fill='%2317875A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F2F5F7;
+    --surface: #FFFFFF;
+    --ink: #0F2233;
+    --muted: #536577;
+    --line: #D3DCE4;
+    --blue: #1D5BD6;
+    --green: #17875A;
+    --on-blue: #FFFFFF;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --display: "IBM Plex Sans Condensed", "Arial Narrow", "IBM Plex Sans", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0E1A26;
+      --surface: #14232F;
+      --ink: #E6EDF3;
+      --muted: #9BACBB;
+      --line: #2A3D4D;
+      --blue: #82AAFF;
+      --green: #4CC38A;
+      --on-blue: #0E1A26;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, p, ul, ol, dl, dd, figure { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  a { color: var(--blue); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2.5px; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 3px; }
+
+  .wrap { max-width: 66rem; margin: 0 auto; padding: 0 1.5rem; }
+
+  .skip {
+    position: absolute; left: 1rem; top: -4rem;
+    background: var(--surface); color: var(--ink); padding: .6rem 1rem; border-radius: 6px;
+  }
+  .skip:focus { top: 1rem; }
+
+  /* Cabeçalho */
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 1.5rem; padding-bottom: 1.5rem; }
+  .top-name { font-family: var(--display); font-weight: 700; font-size: 1.25rem; color: var(--ink); text-decoration: none; }
+  .top nav ul { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; }
+  .top nav a { color: var(--ink); text-decoration: none; font-weight: 500; }
+  .top nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+
+  /* Abertura */
+  .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 3rem; align-items: center; padding-top: 3.5rem; padding-bottom: 5rem; }
+  .hero h1 {
+    font-family: var(--display); font-weight: 700;
+    font-size: clamp(3.5rem, 10vw, 7rem); line-height: .92; letter-spacing: -.015em;
+  }
+  .hero-lead { margin-top: 1.75rem; font-size: 1.375rem; line-height: 1.45; max-width: 30ch; }
+  .hero-links { margin-top: 2rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+  .button {
+    display: inline-block; background: var(--blue); color: var(--on-blue);
+    padding: .7rem 1.25rem; border-radius: 8px; font-weight: 600; text-decoration: none;
+  }
+  .button:hover { filter: brightness(1.1); }
+  .hero-links a:not(.button) { font-weight: 500; }
+
+  .mesh-figure svg { display: block; width: 100%; height: auto; }
+  .mesh-figure figcaption { margin-top: 1rem; color: var(--muted); font-size: .9375rem; line-height: 1.5; max-width: 38ch; }
+  .edge { stroke: var(--line); stroke-width: 2; transition: stroke .3s; }
+  .edge.used { stroke: var(--blue); }
+  .node { fill: var(--surface); stroke: var(--muted); stroke-width: 2; transition: fill .3s, stroke .3s; }
+  .node.holding { fill: var(--blue); stroke: var(--blue); }
+  .node.gateway { stroke: var(--green); }
+  .node.gateway.delivered { fill: var(--green); }
+  .packet { fill: var(--blue); stroke: var(--paper); stroke-width: 2; opacity: 0; }
+  .legend { display: flex; gap: 1.5rem; margin-top: .75rem; color: var(--muted); font-size: .9375rem; }
+  .legend span { display: inline-flex; align-items: center; gap: .5rem; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--muted); border-radius: 50%; }
+  .legend i.gw { border-color: var(--green); border-radius: 3px; }
+
+  /* Secções */
+  .section { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: 2rem; padding-top: 3.5rem; padding-bottom: 3.5rem; border-top: 1px solid var(--line); }
+  .section > h2 { font-family: var(--display); font-weight: 600; font-size: 2rem; line-height: 1.1; }
+  .section-body { max-width: 44rem; }
+
+  /* Projetos */
+  .project + .project { margin-top: 2.75rem; }
+  .project h3 { font-family: var(--display); font-weight: 600; font-size: 1.625rem; line-height: 1.2; }
+  .project-kind { color: var(--muted); font-size: .9375rem; margin-top: .15rem; }
+  .project-text { margin-top: .75rem; }
+  .project-tech { margin-top: .75rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .project-tech li { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: .1rem .75rem; font-size: .875rem; }
+  .project-link { margin-top: .9rem; font-weight: 500; }
+
+  /* Percurso: a linha e os nós repetem o desenho da rede */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before { content: ""; position: absolute; left: 6px; top: .6rem; bottom: .6rem; width: 2px; background: var(--line); }
+  .timeline li { position: relative; }
+  .timeline li + li { margin-top: 1.75rem; }
+  .timeline li::before {
+    content: ""; position: absolute; left: -2rem; top: .45rem; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--surface); border: 2px solid var(--muted);
+  }
+  .timeline li.now::before { background: var(--blue); border-color: var(--blue); }
+  .timeline time, .timeline .when { display: block; color: var(--muted); font-size: .9375rem; }
+  .timeline h3 { font-size: 1.125rem; font-weight: 600; line-height: 1.35; }
+  .timeline p { margin-top: .25rem; }
+
+  /* Competências */
+  .skills { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: .75rem 1.5rem; }
+  .skills dt { font-weight: 600; }
+
+  /* Contacto */
+  .contact-text { font-size: 1.25rem; max-width: 32ch; }
+  .contact-links { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .75rem 1.75rem; font-weight: 500; font-size: 1.125rem; }
+
+  footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .9375rem; padding-top: 1.5rem; padding-bottom: 2.5rem; }
+
+  @media (max-width: 52rem) {
+    .hero { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 2rem; padding-bottom: 3.5rem; }
+    .mesh-figure { max-width: 26rem; }
+    .section { grid-template-columns: 1fr; gap: 1.25rem; padding-top: 2.75rem; padding-bottom: 2.75rem; }
+  }
+  @media (max-width: 30rem) {
+    .top { flex-direction: column; align-items: flex-start; }
+    .skills { grid-template-columns: 1fr; gap: 0; }
+    .skills dd { margin-bottom: .9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .edge, .node { transition: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#projetos">Saltar para os projetos</a>
+
+<header class="wrap top">
+  <a class="top-name" href="#">Igor Fonseca</a>
+  <nav aria-label="Secções">
+    <ul>
+      <li><a href="#projetos">Projetos</a></li>
+      <li><a href="#percurso">Percurso</a></li>
+      <li><a href="#competencias">Competências</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <h1>Igor Fonseca</h1>
+      <p class="hero-lead">Finalista de Engenharia Informática em Tomar. Faço aplicações, monto redes e arranjo o que se avaria.</p>
+      <div class="hero-links">
+        <a class="button" href="https://github.com/xSkillzPTx">Ver o meu GitHub</a>
+        <a href="cv.pdf">Descarregar CV (PDF)</a>
+        <a href="https://www.linkedin.com/in/igor-fonseca-6075171a5/">LinkedIn</a>
+        <a href="mailto:igor300555@gmail.com">igor300555@gmail.com</a>
+      </div>
+    </div>
+
+    <figure class="mesh-figure">
+      <svg id="mesh" viewBox="0 0 420 340" role="img" aria-label="Rede de telemóveis em que uma mensagem salta de aparelho em aparelho até chegar a um gateway."></svg>
+      <div class="legend" aria-hidden="true">
+        <span><i></i>Telemóvel</span>
+        <span><i class="gw"></i>Gateway</span>
+      </div>
+      <figcaption>Sem rede móvel, uma mensagem salta de telemóvel em telemóvel até chegar a um aparelho com ligação. É a ideia do Melinde, o meu projeto final.</figcaption>
+    </figure>
+  </div>
+
+  <section class="wrap section" id="projetos">
+    <h2>Projetos</h2>
+    <div class="section-body">
+
+      <article class="project">
+        <h3>Melinde</h3>
+        <p class="project-kind">Projeto final da licenciatura, em desenvolvimento</p>
+        <p class="project-text">Aplicação Android para comunicar em situações de emergência, quando não há rede móvel nem Internet. Os telemóveis ligam-se entre si numa rede mesh, guardam as mensagens e passam-nas adiante até chegarem a um aparelho com ligação, que as entrega a um servidor central.</p>
+        <ul class="project-tech" aria-label="Tecnologias">
+          <li>Android</li>
+          <li>Bluetooth LE</li>
+          <li>Wi-Fi Direct</li>
+          <li>Redes tolerantes a atrasos</li>
+        </ul>
+        <p class="project-link"><a href="https://github.com/amvvafonso/Melinde">Código do Melinde no GitHub</a></p>
+      </article>
+
+      <article class="project">
+        <h3>GoTime</h3>
+        <p class="project-kind">Trabalho de aplicações móveis, em desenvolvimento</p>
+        <p class="project-text">Agenda para Android que usa o GPS para avisar quando está na hora de sair de casa. Junta à agenda pessoal agendas partilhadas, como o horário de uma turma.</p>
+        <ul class="project-tech" aria-label="Tecnologias">
+          <li>Kotlin</li>
+          <li>Android</li>
+          <li>GPS</li>
+        </ul>
+        <p class="project-link"><a href="https://github.com/xSkillzPTx/GoTime">Código do GoTime no GitHub</a></p>
+      </article>
+
+      <article class="project">
+        <h3>Ally</h3>
+        <p class="project-kind">Trabalho de Computação Distribuída, em desenvolvimento</p>
+        <p class="project-text">Serviço para arrendamento de casas de férias em que o proprietário prova que o imóvel é mesmo seu antes de haver contrato, para travar as fraudes de aluguer. A verificação e os contratos ficam registados numa blockchain.</p>
+        <ul class="project-tech" aria-label="Tecnologias">
+          <li>Java</li>
+          <li>Blockchain</li>
+        </ul>
+        <!-- Quando quiseres mostrar o código, acrescenta aqui:
+        <p class="project-link"><a href="https://github.com/UTILIZADOR/REPOSITORIO">Código do Ally no GitHub</a></p>
+        -->
+      </article>
+
+    </div>
+  </section>
+
+  <section class="wrap section" id="percurso">
+    <h2>Percurso</h2>
+    <div class="section-body">
+      <ol class="timeline">
+        <li class="now">
+          <span class="when">2024 até hoje</span>
+          <h3>Licenciatura em Engenharia Informática, Universidade Politécnica de Tomar</h3>
+          <p>Desenvolvimento web e móvel, bases de dados, redes e segurança informática. Conclusão prevista em 2027.</p>
+        </li>
+        <li>
+          <span class="when">2023 a 2024</span>
+          <h3>Engenharia Eletrotécnica e de Computadores (1.º ano), Universidade Politécnica de Tomar</h3>
+        </li>
+        <li>
+          <span class="when">Novembro de 2022 a agosto de 2023</span>
+          <h3>Service Desk na Kyntech (estágio profissional)</h3>
+          <p>Suporte técnico aos colaboradores do grupo Jerónimo Martins, por telefone e através de tickets.</p>
+        </li>
+        <li>
+          <span class="when">Junho de 2022</span>
+          <h3>Certificação CCNAv7: Introduction to Networks</h3>
+          <p>Cisco Networking Academy, no Instituto Politécnico de Tomar.</p>
+        </li>
+        <li>
+          <span class="when">Maio a junho de 2022</span>
+          <h3>Estágio Erasmus+ na SIA “Datori un Co”, em Riga, Letónia</h3>
+          <p>Reparação de iPhones e iPads, instalação e recuperação de firmware em iOS e Android. Trabalho diário em inglês, numa equipa internacional.</p>
+        </li>
+        <li>
+          <span class="when">Três períodos entre 2021 e 2022</span>
+          <h3>Estágios de informática no Convento de Cristo, em Tomar</h3>
+          <p>Manutenção de equipamentos, manutenção e reparação da rede e montagem de computadores.</p>
+        </li>
+        <li>
+          <span class="when">2019 a 2022</span>
+          <h3>Curso Profissional de Técnico de Informática, Escola Profissional de Tomar</h3>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="wrap section" id="competencias">
+    <h2>Competências</h2>
+    <div class="section-body">
+      <dl class="skills">
+        <dt>Programação</dt>
+        <dd>Java, Python, C#, Kotlin, C++</dd>
+        <dt>Web</dt>
+        <dd>HTML, CSS, JavaScript, PHP, ASP.NET Core MVC, APIs REST</dd>
+        <dt>Bases de dados</dt>
+        <dd>SQL, MySQL, SQL Server</dd>
+        <dt>Redes</dt>
+        <dd>Configuração de switches e routers, endereçamento IPv4 e IPv6, Cisco Packet Tracer</dd>
+        <dt>Ferramentas</dt>
+        <dd>Git, Visual Studio, Visual Studio Code, Android Studio, Azure</dd>
+        <dt>Hardware</dt>
+        <dd>Montagem e reparação de computadores, smartphones e tablets; Arduino</dd>
+        <dt>Línguas</dt>
+        <dd>Português (nativo) e inglês (B2 a falar e a compreender, B1 a escrever)</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="wrap section" id="contacto">
+    <h2>Contacto</h2>
+    <div class="section-body">
+      <p class="contact-text">A forma mais rápida de falar comigo é por email.</p>
+      <div class="contact-links">
+        <a href="mailto:igor300555@gmail.com">igor300555@gmail.com</a>
+        <a href="https://www.linkedin.com/in/igor-fonseca-6075171a5/">LinkedIn</a>
+        <a href="https://github.com/xSkillzPTx">GitHub</a>
+        <a href="cv.pdf">CV em PDF</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>Igor Fonseca, Tomar, Portugal</p>
+</footer>
+
+<script>
+// Desenho da rede no topo da página: uma mensagem sai de um telemóvel,
+// fica guardada em cada nó e segue para o seguinte até chegar ao gateway.
+(function () {
+  var svg = document.getElementById('mesh');
+  if (!svg) return;
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var nodes = [
+    [46, 60], [150, 30], [262, 74], [92, 160], [204, 150],
+    [330, 160], [60, 270], [168, 258], [282, 252], [376, 290]
+  ];
+  var GATEWAY = 9;
+  var SOURCES = [0, 6, 1, 3, 2];
+  var REACH = 140; // distância máxima a que dois aparelhos se "ouvem"
+
+  function make(tag, attrs) {
+    var el = document.createElementNS(NS, tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    svg.appendChild(el);
+    return el;
+  }
+
+  // Ligações entre aparelhos ao alcance uns dos outros
+  var neighbours = nodes.map(function () { return []; });
+  var edgeEls = {};
+  for (var a = 0; a < nodes.length; a++) {
+    for (var b = a + 1; b < nodes.length; b++) {
+      var dx = nodes[a][0] - nodes[b][0], dy = nodes[a][1] - nodes[b][1];
+      if (Math.sqrt(dx * dx + dy * dy) <= REACH) {
+        neighbours[a].push(b);
+        neighbours[b].push(a);
+        edgeEls[a + '-' + b] = make('line', {
+          'class': 'edge', x1: nodes[a][0], y1: nodes[a][1], x2: nodes[b][0], y2: nodes[b][1]
+        });
+      }
+    }
+  }
+
+  var nodeEls = nodes.map(function (n, i) {
+    if (i === GATEWAY) {
+      return make('rect', { 'class': 'node gateway', x: n[0] - 12, y: n[1] - 12, width: 24, height: 24, rx: 6 });
+    }
+    return make('circle', { 'class': 'node', cx: n[0], cy: n[1], r: 10 });
+  });
+  var packet = make('circle', { 'class': 'packet', r: 6 });
+
+  // Caminho mais curto (em saltos) até ao gateway
+  function route(from) {
+    var prev = {}, queue = [from], seen = {};
+    seen[from] = true;
+    while (queue.length) {
+      var cur = queue.shift();
+      if (cur === GATEWAY) break;
+      neighbours[cur].forEach(function (n) {
+        if (!seen[n]) { seen[n] = true; prev[n] = cur; queue.push(n); }
+      });
+    }
+    var path = [GATEWAY];
+    while (path[0] !== from) path.unshift(prev[path[0]]);
+    return path;
+  }
+
+  function edgeBetween(a, b) { return edgeEls[Math.min(a, b) + '-' + Math.max(a, b)]; }
+
+  function clear() {
+    nodeEls.forEach(function (el) { el.classList.remove('holding', 'delivered'); });
+    for (var k in edgeEls) edgeEls[k].classList.remove('used');
+  }
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    // Sem animação: mostra só um caminho já percorrido
+    var fixed = route(0);
+    for (var i = 0; i < fixed.length - 1; i++) edgeBetween(fixed[i], fixed[i + 1]).classList.add('used');
+    nodeEls[GATEWAY].classList.add('delivered');
+    return;
+  }
+
+  var turn = 0;
+  function send() {
+    clear();
+    var path = route(SOURCES[turn++ % SOURCES.length]);
+    var hop = 0;
+
+    function hold(i) {
+      packet.setAttribute('cx', nodes[i][0]);
+      packet.setAttribute('cy', nodes[i][1]);
+      if (i === GATEWAY) {
+        packet.style.opacity = 0;
+        nodeEls[i].classList.add('delivered');
+      } else {
+        nodeEls[i].classList.add('holding');
+      }
+    }
+
+    function travel() {
+      if (hop === path.length - 1) { setTimeout(send, 2200); return; }
+      var from = nodes[path[hop]], to = nodes[path[hop + 1]];
+      var start = null;
+      packet.style.opacity = 1;
+      function frame(t) {
+        if (start === null) start = t;
+        var k = Math.min(1, (t - start) / 700);
+        var e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        packet.setAttribute('cx', from[0] + (to[0] - from[0]) * e);
+        packet.setAttribute('cy', from[1] + (to[1] - from[1]) * e);
+        if (k < 1) { requestAnimationFrame(frame); return; }
+        edgeBetween(path[hop], path[hop + 1]).classList.add('used');
+        nodeEls[path[hop]].classList.remove('holding');
+        hop++;
+        hold(path[hop]);
+        setTimeout(travel, 550);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    hold(path[0]);
+    setTimeout(travel, 900);
+  }
+  send();
+})();
+</script>
+</body>
+</html>
