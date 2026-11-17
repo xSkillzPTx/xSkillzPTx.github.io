@@ -6,10 +6,10 @@
 <title>Igor Fonseca | Engenharia Informática</title>
 <meta name="description" content="Igor Fonseca, finalista de Engenharia Informática em Tomar. Projetos, percurso e contacto.">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 9 L24 14 L12 24' fill='none' stroke='%231D5BD6' stroke-width='2.5'/%3E%3Ccircle cx='8' cy='9' r='4.5' fill='%231D5BD6'/%3E%3Ccircle cx='24' cy='14' r='4.5' fill='%231D5BD6'/%3E%3Crect x='7' y='19' width='10' height='10' rx='2.5' fill='%2317875A'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230F2233'/%3E%3Cpath d='M8 11l6 5-6 5' fill='none' stroke='%237FD1A6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M17 22h7' stroke='%23E6EDF3' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #F2F5F7;
@@ -22,6 +22,13 @@
     --on-blue: #FFFFFF;
     --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
     --display: "IBM Plex Sans Condensed", "Arial Narrow", "IBM Plex Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace;
+    --term-bg: #0F2233;
+    --term-fg: #E6EDF3;
+    --term-soft: #B7C5D1;
+    --term-line: #2A4054;
+    --term-prompt: #7FD1A6;
+    --term-link: #A9C4FF;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -33,6 +40,8 @@
       --blue: #82AAFF;
       --green: #4CC38A;
       --on-blue: #0E1A26;
+      --term-bg: #0A141D;
+      --term-line: #2A3D4D;
     }
   }
 
@@ -83,19 +92,36 @@
   .button:hover { filter: brightness(1.1); }
   .hero-links a:not(.button) { font-weight: 500; }
 
-  .mesh-figure svg { display: block; width: 100%; height: auto; }
-  .mesh-figure figcaption { margin-top: 1rem; color: var(--muted); font-size: .9375rem; line-height: 1.5; max-width: 38ch; }
-  .edge { stroke: var(--line); stroke-width: 2; transition: stroke .3s; }
-  .edge.used { stroke: var(--blue); }
-  .node { fill: var(--surface); stroke: var(--muted); stroke-width: 2; transition: fill .3s, stroke .3s; }
-  .node.holding { fill: var(--blue); stroke: var(--blue); }
-  .node.gateway { stroke: var(--green); }
-  .node.gateway.delivered { fill: var(--green); }
-  .packet { fill: var(--blue); stroke: var(--paper); stroke-width: 2; opacity: 0; }
-  .legend { display: flex; gap: 1.5rem; margin-top: .75rem; color: var(--muted); font-size: .9375rem; }
-  .legend span { display: inline-flex; align-items: center; gap: .5rem; }
-  .legend i { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--muted); border-radius: 50%; }
-  .legend i.gw { border-color: var(--green); border-radius: 3px; }
+  /* Terminal */
+  .term-wrap { min-width: 0; }
+  .term {
+    background: var(--term-bg); color: var(--term-fg);
+    border: 1px solid var(--term-line); border-radius: 10px; overflow: hidden;
+    font-family: var(--mono); font-size: .9375rem; line-height: 1.55;
+  }
+  .term:focus-within { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .term-bar { padding: .5rem 1rem; border-bottom: 1px solid var(--term-line); color: var(--term-soft); font-size: .8125rem; }
+  .term-out { height: 17.5rem; overflow-y: auto; padding: .9rem 1rem 0; }
+  .term-out p { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .term-out .line-out { color: var(--term-soft); }
+  .term-out .gap { margin-bottom: .7rem; }
+  .term-out a { color: var(--term-link); }
+  .term-prompt { color: var(--term-prompt); }
+  .term-form { display: flex; align-items: center; gap: .6rem; padding: .35rem 1rem .9rem; }
+  .term-form input {
+    flex: 1; min-width: 0; background: transparent; border: 0; padding: 0;
+    color: inherit; font: inherit; font-size: max(16px, .9375rem); caret-color: var(--term-prompt);
+  }
+  .term-form input:focus { outline: none; }
+  .term-form input::placeholder { color: var(--term-soft); opacity: .7; }
+  .term-cmds { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+  .term-cmds button {
+    font-family: var(--mono); font-size: .875rem; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: .25rem .7rem; cursor: pointer;
+  }
+  .term-cmds button:hover { border-color: var(--blue); color: var(--blue); }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   /* Secções */
   .section { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: 2rem; padding-top: 3.5rem; padding-bottom: 3.5rem; border-top: 1px solid var(--line); }
@@ -111,7 +137,7 @@
   .project-tech li { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: .1rem .75rem; font-size: .875rem; }
   .project-link { margin-top: .9rem; font-weight: 500; }
 
-  /* Percurso: a linha e os nós repetem o desenho da rede */
+  /* Percurso */
   .timeline { position: relative; padding-left: 2rem; }
   .timeline::before { content: ""; position: absolute; left: 6px; top: .6rem; bottom: .6rem; width: 2px; background: var(--line); }
   .timeline li { position: relative; }
@@ -137,7 +163,7 @@
 
   @media (max-width: 52rem) {
     .hero { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 2rem; padding-bottom: 3.5rem; }
-    .mesh-figure { max-width: 26rem; }
+    .term-wrap { max-width: 36rem; }
     .section { grid-template-columns: 1fr; gap: 1.25rem; padding-top: 2.75rem; padding-bottom: 2.75rem; }
   }
   @media (max-width: 30rem) {
@@ -147,7 +173,6 @@
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .edge, .node { transition: none; }
   }
 </style>
 </head>
@@ -179,14 +204,25 @@
       </div>
     </div>
 
-    <figure class="mesh-figure">
-      <svg id="mesh" viewBox="0 0 420 340" role="img" aria-label="Rede de telemóveis em que uma mensagem salta de aparelho em aparelho até chegar a um gateway."></svg>
-      <div class="legend" aria-hidden="true">
-        <span><i></i>Telemóvel</span>
-        <span><i class="gw"></i>Gateway</span>
+    <div class="term-wrap">
+      <div class="term" id="term">
+        <div class="term-bar">igor@tomar: ~</div>
+        <div class="term-out" id="term-out" role="log" aria-live="polite" aria-label="Resultado dos comandos"></div>
+        <form class="term-form" id="term-form" autocomplete="off">
+          <label class="term-prompt" for="term-in" aria-hidden="true">$</label>
+          <label class="visually-hidden" for="term-in">Escreve um comando</label>
+          <input id="term-in" type="text" placeholder="escreve ajuda" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        </form>
       </div>
-      <figcaption>Sem rede móvel, uma mensagem salta de telemóvel em telemóvel até chegar a um aparelho com ligação. É a ideia do Melinde, o meu projeto final.</figcaption>
-    </figure>
+      <div class="term-cmds" id="term-cmds" aria-label="Comandos">
+        <button type="button" data-cmd="sobre">sobre</button>
+        <button type="button" data-cmd="projetos">projetos</button>
+        <button type="button" data-cmd="competencias">competencias</button>
+        <button type="button" data-cmd="percurso">percurso</button>
+        <button type="button" data-cmd="contacto">contacto</button>
+        <button type="button" data-cmd="cv">cv</button>
+      </div>
+    </div>
   </div>
 
   <section class="wrap section" id="projetos">
@@ -343,126 +379,179 @@
 </footer>
 
 <script>
-// Desenho da rede no topo da página: uma mensagem sai de um telemóvel,
-// fica guardada em cada nó e segue para o seguinte até chegar ao gateway.
+// Terminal do topo da página: aceita comandos escritos ou clicados
+// e responde com a informação do resto do site.
 (function () {
-  var svg = document.getElementById('mesh');
-  if (!svg) return;
+  var out = document.getElementById('term-out');
+  var form = document.getElementById('term-form');
+  var input = document.getElementById('term-in');
+  var buttons = document.getElementById('term-cmds');
+  if (!out || !form || !input) return;
 
-  var NS = 'http://www.w3.org/2000/svg';
-  var nodes = [
-    [46, 60], [150, 30], [262, 74], [92, 160], [204, 150],
-    [330, 160], [60, 270], [168, 258], [282, 252], [376, 290]
+  var GITHUB = 'https://github.com/';
+  var PROJECTS = [
+    ['Melinde', 'mensagens de emergência sem rede móvel (Android)', GITHUB + 'amvvafonso/Melinde'],
+    ['SkillBridge', 'colaboração técnica em tempo real (C#, ASP.NET Core)', GITHUB + 'xSkillzPTx/SkillBridge'],
+    ['GoTime', 'agenda que avisa quando sair, por GPS (Kotlin)', GITHUB + 'xSkillzPTx/GoTime'],
+    ['Ally', 'arrendamento de férias com prova de propriedade (Java)', null],
+    ['Teclado preditivo', 'sugere palavras e tolera erros de digitação (Java)', GITHUB + 'xSkillzPTx/ProjetoFinalEDA']
   ];
-  var GATEWAY = 9;
-  var SOURCES = [0, 6, 1, 3, 2];
-  var REACH = 140; // distância máxima a que dois aparelhos se "ouvem"
 
-  function make(tag, attrs) {
-    var el = document.createElementNS(NS, tag);
-    for (var k in attrs) el.setAttribute(k, attrs[k]);
-    svg.appendChild(el);
-    return el;
-  }
-
-  // Ligações entre aparelhos ao alcance uns dos outros
-  var neighbours = nodes.map(function () { return []; });
-  var edgeEls = {};
-  for (var a = 0; a < nodes.length; a++) {
-    for (var b = a + 1; b < nodes.length; b++) {
-      var dx = nodes[a][0] - nodes[b][0], dy = nodes[a][1] - nodes[b][1];
-      if (Math.sqrt(dx * dx + dy * dy) <= REACH) {
-        neighbours[a].push(b);
-        neighbours[b].push(a);
-        edgeEls[a + '-' + b] = make('line', {
-          'class': 'edge', x1: nodes[a][0], y1: nodes[a][1], x2: nodes[b][0], y2: nodes[b][1]
-        });
-      }
-    }
-  }
-
-  var nodeEls = nodes.map(function (n, i) {
-    if (i === GATEWAY) {
-      return make('rect', { 'class': 'node gateway', x: n[0] - 12, y: n[1] - 12, width: 24, height: 24, rx: 6 });
-    }
-    return make('circle', { 'class': 'node', cx: n[0], cy: n[1], r: 10 });
-  });
-  var packet = make('circle', { 'class': 'packet', r: 6 });
-
-  // Caminho mais curto (em saltos) até ao gateway
-  function route(from) {
-    var prev = {}, queue = [from], seen = {};
-    seen[from] = true;
-    while (queue.length) {
-      var cur = queue.shift();
-      if (cur === GATEWAY) break;
-      neighbours[cur].forEach(function (n) {
-        if (!seen[n]) { seen[n] = true; prev[n] = cur; queue.push(n); }
+  // Cada comando devolve uma lista de linhas; uma linha é texto
+  // ou uma lista de partes, em que [texto, endereço] é um link.
+  var COMMANDS = {
+    ajuda: function () {
+      return [
+        'sobre         quem sou',
+        'projetos      o que tenho feito',
+        'competencias  com o que trabalho',
+        'percurso      formação e experiência',
+        'contacto      como falar comigo',
+        'cv            o meu CV em PDF',
+        'limpar        limpa o terminal'
+      ];
+    },
+    sobre: function () {
+      return [
+        'Igor Fonseca, finalista de Engenharia Informática na Universidade Politécnica de Tomar.',
+        'Antes disso: service desk na Kyntech e um estágio Erasmus+ em Riga.'
+      ];
+    },
+    projetos: function () {
+      return PROJECTS.map(function (p) {
+        return [p[2] ? [p[0], p[2]] : p[0], ': ' + p[1]];
       });
+    },
+    competencias: function () {
+      return [
+        'Programação  Java, Python, C#, Kotlin, C++, Assembly',
+        'Web          HTML, CSS, JavaScript, PHP, ASP.NET Core MVC',
+        'Dados        SQL, MySQL, SQL Server',
+        'Redes        switches e routers, IPv4 e IPv6, Packet Tracer, GNS3',
+        'Sistemas     Linux (Arch, CentOS, Kali), VirtualBox'
+      ];
+    },
+    percurso: function () {
+      return [
+        '2024 até hoje  Engenharia Informática, Tomar',
+        '2022 a 2023    Service Desk na Kyntech',
+        '2022           Certificação Cisco CCNAv7',
+        '2022           Estágio Erasmus+ em Riga',
+        '2019 a 2022    Curso de Técnico de Informática'
+      ];
+    },
+    contacto: function () {
+      return [
+        ['Email     ', ['igor300555@gmail.com', 'mailto:igor300555@gmail.com']],
+        ['LinkedIn  ', ['igor-fonseca', 'https://www.linkedin.com/in/igor-fonseca-6075171a5/']],
+        ['GitHub    ', ['xSkillzPTx', GITHUB + 'xSkillzPTx']]
+      ];
+    },
+    cv: function () {
+      return [[['Abrir o CV em PDF', 'cv.pdf']]];
+    },
+    sudo: function () {
+      return ['Boa tentativa. Aqui não há root.'];
     }
-    var path = [GATEWAY];
-    while (path[0] !== from) path.unshift(prev[path[0]]);
-    return path;
-  }
+  };
+  var ALIASES = {
+    help: 'ajuda', '?': 'ajuda', whoami: 'sobre', about: 'sobre',
+    ls: 'projetos', projects: 'projetos', projectos: 'projetos',
+    'competências': 'competencias', skills: 'competencias',
+    contact: 'contacto', contato: 'contacto', clear: 'limpar', cls: 'limpar'
+  };
 
-  function edgeBetween(a, b) { return edgeEls[Math.min(a, b) + '-' + Math.max(a, b)]; }
-
-  function clear() {
-    nodeEls.forEach(function (el) { el.classList.remove('holding', 'delivered'); });
-    for (var k in edgeEls) edgeEls[k].classList.remove('used');
-  }
-
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) {
-    // Sem animação: mostra só um caminho já percorrido
-    var fixed = route(0);
-    for (var i = 0; i < fixed.length - 1; i++) edgeBetween(fixed[i], fixed[i + 1]).classList.add('used');
-    nodeEls[GATEWAY].classList.add('delivered');
-    return;
-  }
-
-  var turn = 0;
-  function send() {
-    clear();
-    var path = route(SOURCES[turn++ % SOURCES.length]);
-    var hop = 0;
-
-    function hold(i) {
-      packet.setAttribute('cx', nodes[i][0]);
-      packet.setAttribute('cy', nodes[i][1]);
-      if (i === GATEWAY) {
-        packet.style.opacity = 0;
-        nodeEls[i].classList.add('delivered');
+  function addLine(parts, cls) {
+    var p = document.createElement('p');
+    p.className = cls;
+    (typeof parts === 'string' ? [parts] : parts).forEach(function (part) {
+      if (typeof part === 'string') {
+        p.appendChild(document.createTextNode(part));
       } else {
-        nodeEls[i].classList.add('holding');
+        var a = document.createElement('a');
+        a.textContent = part[0];
+        a.href = part[1];
+        p.appendChild(a);
       }
-    }
-
-    function travel() {
-      if (hop === path.length - 1) { setTimeout(send, 2200); return; }
-      var from = nodes[path[hop]], to = nodes[path[hop + 1]];
-      var start = null;
-      packet.style.opacity = 1;
-      function frame(t) {
-        if (start === null) start = t;
-        var k = Math.min(1, (t - start) / 700);
-        var e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-        packet.setAttribute('cx', from[0] + (to[0] - from[0]) * e);
-        packet.setAttribute('cy', from[1] + (to[1] - from[1]) * e);
-        if (k < 1) { requestAnimationFrame(frame); return; }
-        edgeBetween(path[hop], path[hop + 1]).classList.add('used');
-        nodeEls[path[hop]].classList.remove('holding');
-        hop++;
-        hold(path[hop]);
-        setTimeout(travel, 550);
-      }
-      requestAnimationFrame(frame);
-    }
-
-    hold(path[0]);
-    setTimeout(travel, 900);
+    });
+    out.appendChild(p);
+    return p;
   }
-  send();
+
+  function addPrompt(text) {
+    var p = document.createElement('p');
+    var mark = document.createElement('span');
+    mark.className = 'term-prompt';
+    mark.textContent = '$ ';
+    p.appendChild(mark);
+    var typed = document.createTextNode(text);
+    p.appendChild(typed);
+    out.appendChild(p);
+    return typed;
+  }
+
+  function respond(raw) {
+    var first = raw.trim().toLowerCase().split(/\s+/)[0];
+    var name = ALIASES[first] || first;
+    if (name === 'limpar') { out.textContent = ''; return; }
+    var lines = COMMANDS.hasOwnProperty(name)
+      ? COMMANDS[name]()
+      : ['Comando não encontrado: ' + first, 'Escreve ajuda para ver os comandos.'];
+    var last;
+    lines.forEach(function (line) { last = addLine(line, 'line-out'); });
+    if (last) last.classList.add('gap');
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function run(raw) {
+    if (!raw.trim()) return;
+    addPrompt(raw);
+    respond(raw);
+  }
+
+  // Histórico com as setas para cima e para baixo
+  var history = [], cursor = 0;
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var value = input.value;
+    input.value = '';
+    if (!value.trim()) return;
+    history.push(value);
+    cursor = history.length;
+    run(value);
+  });
+  input.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    if (!history.length) return;
+    e.preventDefault();
+    cursor = Math.max(0, Math.min(history.length, cursor + (e.key === 'ArrowUp' ? -1 : 1)));
+    input.value = history[cursor] || '';
+  });
+
+  buttons.addEventListener('click', function (e) {
+    var cmd = e.target.getAttribute && e.target.getAttribute('data-cmd');
+    if (cmd) run(cmd);
+  });
+  // Clicar em qualquer sítio do terminal leva o cursor para a linha de comando
+  document.getElementById('term').addEventListener('click', function (e) {
+    if (e.target.tagName !== 'A' && !window.getSelection().toString()) input.focus({ preventScroll: true });
+  });
+
+  // Ao abrir a página, o comando "sobre" escreve-se sozinho
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) { run('sobre'); addLine('Escreve ajuda para ver os comandos.', 'line-out gap'); return; }
+  var intro = 'sobre', typed = addPrompt(''), i = 0;
+  (function type() {
+    if (i < intro.length) {
+      typed.data += intro.charAt(i++);
+      setTimeout(type, 110);
+      return;
+    }
+    setTimeout(function () {
+      respond(intro);
+      addLine('Escreve ajuda para ver os comandos.', 'line-out gap');
+    }, 350);
+  })();
 })();
 </script>
 </body>
